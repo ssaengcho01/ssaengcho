@@ -12,9 +12,9 @@ AI 디자인 크리에이터 **쌩초(@ssaengcho)** 가 직접 만들어 쓰는 
 
 ## 작업 예시
 
-| 스톱모션 콜라주 편집 | 화면 녹화 줌 편집 |
-| :---: | :---: |
-| <img src="./stopmotion-collage-edit/examples/skate-collage.jpg" width="240" alt="스톱모션 콜라주 예시"> | <img src="./zoom-in-screen/examples/zoom-preview.svg" width="240" alt="줌 편집 예시"> |
+| 스톱모션 콜라주 편집 | 회화 애니메이션 | 화면 녹화 줌 편집 |
+| :---: | :---: | :---: |
+| <img src="./stopmotion-collage-edit/examples/skate-collage.jpg" width="240" alt="스톱모션 콜라주 예시"> | <img src="./painterly-animation/examples/jarasum-turtle-island.jpg" width="240" alt="회화 애니메이션 예시 (자라섬)"> | <img src="./zoom-in-screen/examples/zoom-preview.svg" width="240" alt="줌 편집 예시"> |
 
 ## 설치 방법 (Claude/GPT)
 

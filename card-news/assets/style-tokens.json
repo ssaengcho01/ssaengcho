@@ -1,9 +1,0 @@
-{
-  "canvas": { "width": 1080, "height": 1350, "fps": 30 },
-  "color": { "background": "#FFFDF7", "green": "#23AC3A", "text": "#303234", "muted": "#65676A", "surface": "#FFFFFF" },
-  "spacing": { "outer": 92, "compact": 24, "section": 56 },
-  "radius": { "frame": 6, "callout": 6 },
-  "stroke": { "callout": 4 },
-  "type": { "hero": 108, "pageTitle": 72, "emphasis": 60, "body": 40, "label": 31, "letterSpacing": 0 },
-  "durationSeconds": { "cover": 10, "standard": 5.2 }
-}

@@ -1,7 +1,0 @@
-interface:
-  display_name: "Card News"
-  short_description: "Build pixel-matched 4:5 card-news MP4 templates"
-  icon_small: "./assets/card-news-icon.svg"
-  icon_large: "./assets/card-news-icon.svg"
-  brand_color: "#23AC3A"
-  default_prompt: "Use $card-news to create an editable 4:5 card-news template and export pixel-matched MP4 files with or without media."

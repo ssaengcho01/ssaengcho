@@ -4,17 +4,25 @@ AI 디자인 크리에이터 **쌩초(@ssaengcho)** 가 직접 만들어 쓰는 
 
 ## 스킬 목록
 
-| 스킬 | 하는 일 |
-| --- | --- |
-| [스톱모션 콜라주 편집](./stopmotion-collage-edit) | 내 영상을 12fps 스톱모션 + 종이 콜라주 스크랩북 스타일(오린 단어 조각, 손낙서, 낡은 폴라로이드)로 편집해요. |
-| [화면 녹화 줌 편집](./zoom-in-screen) | 화면 녹화 영상에서 꼭 필요한 곳만 확대하고, 화면을 바꾸는 진짜 클릭에만 빨간 라운드 박스를 넣어요. |
-| [회화 애니메이션](./painterly-animation) | AI 생성 도구 없이 three.js 코드로 직접 그리는 회화풍 2.5D 애니메이션·광고 영상을 만들어요. 컷별 시안을 먼저 보여주고 렌더해요. |
-
-## 작업 예시
-
-| 스톱모션 콜라주 편집 | 회화 애니메이션 | 화면 녹화 줌 편집 |
-| :---: | :---: | :---: |
-| <img src="./stopmotion-collage-edit/examples/skate-collage.jpg" width="240" alt="스톱모션 콜라주 예시"> | <img src="./painterly-animation/examples/jarasum-turtle-island.jpg" width="240" alt="회화 애니메이션 예시 (자라섬)"> | <img src="./zoom-in-screen/examples/zoom-preview.svg" width="240" alt="줌 편집 예시"> |
+<table>
+<tr>
+<td align="center" valign="top" width="33%">
+<a href="./stopmotion-collage-edit"><img src="./stopmotion-collage-edit/examples/skate-collage.jpg" alt="스톱모션 콜라주 편집 예시" width="100%"></a><br>
+<b><a href="./stopmotion-collage-edit">스톱모션 콜라주 편집</a></b><br>
+<sub>내 영상을 12fps 스톱모션 + 종이 콜라주 스크랩북 스타일로</sub>
+</td>
+<td align="center" valign="top" width="33%">
+<a href="./painterly-animation"><img src="./painterly-animation/examples/jarasum-turtle-island.jpg" alt="회화 애니메이션 예시 (자라섬)" width="100%"></a><br>
+<b><a href="./painterly-animation">회화 애니메이션</a></b><br>
+<sub>three.js 코드로 직접 그리는 붓터치 회화풍 2.5D 영상</sub>
+</td>
+<td align="center" valign="top" width="33%">
+<a href="./zoom-in-screen"><img src="./zoom-in-screen/examples/zoom-preview.svg" alt="화면 녹화 줌 편집 예시" width="100%"></a><br>
+<b><a href="./zoom-in-screen">화면 녹화 줌 편집</a></b><br>
+<sub>꼭 필요한 곳만 확대, 진짜 클릭에만 빨간 박스</sub>
+</td>
+</tr>
+</table>
 
 ## 설치 방법 (Claude/GPT)
 

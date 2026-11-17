@@ -10,6 +10,12 @@ AI 디자인 크리에이터 **쌩초(@ssaengcho)** 가 직접 만들어 쓰는 
 | [화면 녹화 줌 편집](./zoom-in-screen) | 화면 녹화 영상에서 꼭 필요한 곳만 확대하고, 화면을 바꾸는 진짜 클릭에만 빨간 라운드 박스를 넣어요. |
 | [회화 애니메이션](./painterly-animation) | AI 생성 도구 없이 three.js 코드로 직접 그리는 회화풍 2.5D 애니메이션·광고 영상을 만들어요. 컷별 시안을 먼저 보여주고 렌더해요. |
 
+## 작업 예시
+
+| 스톱모션 콜라주 편집 | 화면 녹화 줌 편집 |
+| :---: | :---: |
+| <img src="./stopmotion-collage-edit/examples/skate-collage.jpg" width="240" alt="스톱모션 콜라주 예시"> | <img src="./zoom-in-screen/examples/zoom-preview.svg" width="240" alt="줌 편집 예시"> |
+
 ## 설치 방법 (Claude/GPT)
 
 **① 링크로 바로 설치 (가장 쉬움)**

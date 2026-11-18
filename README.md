@@ -7,7 +7,7 @@ AI 디자인 크리에이터 **쌩초(@ssaengcho)** 가 직접 만들어 쓰는 
 <table>
 <tr>
 <td align="center" valign="top" width="33%">
-<a href="./stopmotion-collage-edit"><img src="./stopmotion-collage-edit/examples/skate-collage.jpg" alt="스톱모션 콜라주 편집 예시" width="100%"></a><br>
+<a href="./stopmotion-collage-edit"><img src="./stopmotion-collage-edit/examples/buttery-house-collage.jpg" alt="스톱모션 콜라주 편집 예시 (베이커리 카페)" width="100%"></a><br>
 <b><a href="./stopmotion-collage-edit">스톱모션 콜라주 편집</a></b><br>
 <sub>내 영상을 12fps 스톱모션 + 종이 콜라주 스크랩북 스타일로</sub>
 </td>

@@ -1,6 +1,6 @@
 # 스톱모션 콜라주 편집
 
-<img src="./examples/skate-collage.jpg" alt="스톱모션 콜라주 예시" width="720">
+<img src="./examples/buttery-house-collage.jpg" alt="스톱모션 콜라주 예시 (베이커리 카페)" width="720">
 
 내 영상을 12fps 스톱모션 + 종이 콜라주 스크랩북 스타일로 편집해요. 오린 단어 조각, 손낙서, 낡은 폴라로이드, 종이 질감까지 한 번에 들어가요.
 

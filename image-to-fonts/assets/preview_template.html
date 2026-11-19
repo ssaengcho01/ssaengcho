@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{FONT_NAME}} — 폰트 미리보기</title>
+<style>
+@font-face { font-family:'UserFont'; src:url(data:font/otf;base64,{{FONT_B64}}) format('opentype'); }
+:root{ --orange:#F97316; --orange-dark:#DB6812; --ink:#1C1B18; --line:#E3E1D8; }
+*{box-sizing:border-box;}
+body { font-family:'Pretendard','Malgun Gothic',sans-serif; background:#F5F4EF; color:var(--ink);
+  margin:0; padding:40px 24px 20px; }
+.wrap { max-width:960px; margin:0 auto; }
+.card { background:#fff; border:2px solid var(--ink); border-radius:16px; padding:36px; margin-bottom:20px; }
+.uf { font-family:'UserFont', serif; }
+h1.uf { font-size:clamp(48px, 11vw, 120px); margin:0; line-height:1.1; font-weight:normal; }
+.tag { font-size:11px; letter-spacing:2px; color:#888; text-transform:uppercase; margin-bottom:12px; }
+.abc { font-size:44px; line-height:1.5; word-break:break-all; }
+.s1 { font-size:56px; } .s2 { font-size:32px; } .s3 { font-size:20px; }
+.note { font-size:12px; color:#777; }
+
+.report-card { border-color:var(--orange); }
+.attach-btn {
+  background:var(--orange); color:#fff; border:none; border-radius:10px;
+  padding:12px 22px; font-size:15px; font-weight:700; cursor:pointer;
+  transition:background .12s; display:inline-flex; align-items:center; gap:8px;
+}
+.attach-btn:hover { background:var(--orange-dark); }
+.attach-btn:active { transform:translateY(1px); }
+.attach-btn:disabled { opacity:.4; cursor:default; }
+footer { text-align:center; padding:22px 0 8px; font-size:12px; color:#999; }
+footer b { color:#666; }
+</style>
+</head><body><div class="wrap">
+
+<div style="text-align:center;margin-bottom:22px">
+  <span style="font-size:12px;font-weight:800;letter-spacing:3px;color:#F97316;text-transform:uppercase">Image to Font Skill</span>
+</div>
+
+<div class="card"><div class="tag">Font Name</div>
+  <h1 class="uf">{{FONT_NAME}}</h1></div>
+
+<div class="card"><div class="tag">Character Set · {{CHAR_COUNT}}</div>
+  <div class="abc uf">{{CHARSET_ROWS}}</div>
+  {{MISSING_NOTE}}</div>
+
+<div class="card"><div class="tag">Sample</div>
+  <div class="uf s1">{{SAMPLE_1}}</div></div>
+
+<div class="card"><div class="tag">Type Tester · 직접 써보기</div>
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap">
+    <label class="note" for="ttSize">크기</label>
+    <input id="ttSize" type="range" min="16" max="160" value="64" style="flex:1;min-width:160px;accent-color:var(--orange)">
+    <span id="ttVal" class="note" style="min-width:44px">64px</span>
+    <label class="note" for="ttLs">자간</label>
+    <input id="ttLs" type="range" min="-10" max="30" value="0" style="width:120px;accent-color:var(--orange)">
+    <span id="ttLsVal" class="note" style="min-width:44px">0</span>
+  </div>
+  <textarea id="tt" class="uf" spellcheck="false" placeholder="여기에 입력해 보세요"
+    style="width:100%;min-height:180px;font-size:64px;line-height:1.25;border:2px dashed var(--line);border-radius:12px;padding:16px;resize:vertical;outline:none;color:var(--ink);background:#FCFBF8">Type here!</textarea>
+  <p class="note" style="margin-top:8px">이 폰트에 들어 있는 글자만 폰트 모양으로 보여요.</p>
+</div>
+
+<div class="card" style="text-align:center">
+  <button id="dlFontBtn" style="font-size:18px;font-weight:700;padding:14px 28px;border:2px solid var(--ink);border-radius:12px;background:#2743D6;color:#fff;cursor:pointer">폰트 파일(.otf) 다운로드</button>
+  <p id="dlMsg" class="note" style="margin-top:10px">Claude 미리보기에서는 .zip(안에 .otf)으로, 내려받은 HTML 파일에서는 .otf로 바로 저장돼요.</p>
+</div>
+
+<div class="card report-card">
+  <div style="font-size:24px;font-weight:800;color:var(--orange);margin-bottom:10px">바꾸고 싶은 글자가 있나요?</div>
+  <p class="note" style="font-size:13px;line-height:1.7">
+    이 파일이 아니라 <b>Claude와 대화하던 화면으로 돌아가서</b>, 바꾸고 싶은 글자의 이미지를
+    크고 선명하게 다시 찍어 <b style="color:var(--orange)">대화창에 바로 첨부</b>하고
+    "이 글자로 바꿔줘"라고 말씀해주시면 그 글자만 골라 다시 만들어 드려요.<br><br>
+    · 글자 높이 <b>150px 이상 권장</b> (최소 80px — 너무 작으면 곡선이 뭉개져요)<br>
+    · 흰 배경에 검정 글자가 가장 정확해요<br>
+    · 여러 글자를 한 번에 첨부해도 괜찮아요
+  </p>
+</div>
+
+<p class="note" style="text-align:center">이 파일 하나로 어디서든 미리보기 가능 (폰트 내장). 설치는 함께 받은 .otf를 더블클릭하세요.</p>
+<footer>© <b>@ssaengcho</b> — Custom Fonts로 제작<br>
+  <span style="font-size:11px">활용하거나 퍼가실 때는 꼭 <b>@ssaengcho</b> 출처 태그를 남겨주세요 🙏</span></footer>
+
+</div>
+<script>
+(function(){
+"use strict";
+/* 직접 써보기 */
+var tt=document.getElementById("tt"),sz=document.getElementById("ttSize"),ls=document.getElementById("ttLs");
+function upd(){tt.style.fontSize=sz.value+"px";document.getElementById("ttVal").textContent=sz.value+"px";
+  tt.style.letterSpacing=(ls.value/100)+"em";document.getElementById("ttLsVal").textContent=ls.value;}
+sz.oninput=upd; ls.oninput=upd; upd();
+
+/* 다운로드: Claude 아티팩트 뷰어는 페이지의 직접 다운로드를 막고 .otf 확장자도 허용하지 않으므로
+   downloads 기능(아티팩트에 {downloads:true} 선언 필요)으로 .zip을 저장한다.
+   로컬에서 연 HTML 파일은 window.claude가 없으므로 .otf를 바로 저장한다. */
+var OTF_B64="{{FONT_B64}}", ZIP_B64="{{ZIP_B64}}", NAME="{{FONT_FILE_NAME}}";
+var btn=document.getElementById("dlFontBtn"), msg=document.getElementById("dlMsg");
+function say(t){ if(msg) msg.textContent=t; }
+function b64buf(b){var bin=atob(b),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u;}
+function localDownload(){
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([b64buf(OTF_B64)],{type:"font/otf"})); a.download=NAME+".otf";
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},800);
+}
+var FAIL="이 화면에서는 다운로드가 안 돼요. 채팅에 첨부된 "+NAME+".otf 파일을 받아주세요.";
+if(btn){
+  btn.onclick=function(){
+    if(window.claude && typeof window.claude.use==="function"){
+      say("저장 창을 여는 중…");
+      window.claude.use("downloads").then(function(dl){
+        if(!dl){ say(FAIL); return; }
+        return dl.save({filename:NAME+".zip", data:new Blob([b64buf(ZIP_B64)])}).then(function(){
+          say("저장 완료! zip을 풀고 "+NAME+".otf를 더블클릭해 설치하세요.");
+        });
+      }).catch(function(e){
+        var c=e&&e.code;
+        say(c==="declined"?"저장을 취소했어요.":c==="rate_limited"?"잠시 후 다시 눌러주세요.":FAIL);
+      });
+    } else { localDownload(); }
+  };
+}
+})();
+</script>
+</body></html>

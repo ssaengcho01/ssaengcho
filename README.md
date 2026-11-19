@@ -29,6 +29,14 @@ AI 디자인 크리에이터 **쌩초(@ssaengcho)** 가 직접 만들어 쓰는 
 <sub>재생되는 스토리보드에 씬별로 고칠 점 적고 바로 반영</sub>
 </td>
 </tr>
+<tr>
+<td align="center" valign="top" width="50%">
+<a href="./image-to-fonts"><img src="./image-to-fonts/examples/sc-daisy-preview.png" alt="이미지로 폰트 만들기 예시 (sc-daisy)" width="100%"></a><br>
+<b><a href="./image-to-fonts">이미지로 폰트 만들기</a></b><br>
+<sub>폰트 견본 시트 이미지를 설치 가능한 .otf 폰트로</sub>
+</td>
+<td width="50%"></td>
+</tr>
 </table>
 
 ## 설치 방법 (Claude/GPT)

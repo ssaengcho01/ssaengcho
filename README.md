@@ -6,20 +6,27 @@ AI 디자인 크리에이터 **쌩초(@ssaengcho)** 가 직접 만들어 쓰는 
 
 <table>
 <tr>
-<td align="center" valign="top" width="33%">
+<td align="center" valign="top" width="50%">
 <a href="./stopmotion-collage-edit"><img src="./stopmotion-collage-edit/examples/buttery-house-collage.jpg" alt="스톱모션 콜라주 편집 예시 (베이커리 카페)" width="100%"></a><br>
 <b><a href="./stopmotion-collage-edit">스톱모션 콜라주 편집</a></b><br>
 <sub>내 영상을 12fps 스톱모션 + 종이 콜라주 스크랩북 스타일로</sub>
 </td>
-<td align="center" valign="top" width="33%">
+<td align="center" valign="top" width="50%">
 <a href="./painterly-animation"><img src="./painterly-animation/examples/jarasum-turtle-island.jpg" alt="회화 애니메이션 예시 (자라섬)" width="100%"></a><br>
 <b><a href="./painterly-animation">회화 애니메이션</a></b><br>
 <sub>three.js 코드로 직접 그리는 붓터치 회화풍 2.5D 영상</sub>
 </td>
-<td align="center" valign="top" width="33%">
+</tr>
+<tr>
+<td align="center" valign="top" width="50%">
 <a href="./zoom-in-screen"><img src="./zoom-in-screen/examples/zoom-preview.svg" alt="화면 녹화 줌 편집 예시" width="100%"></a><br>
 <b><a href="./zoom-in-screen">화면 녹화 줌 편집</a></b><br>
 <sub>꼭 필요한 곳만 확대, 진짜 클릭에만 빨간 박스</sub>
+</td>
+<td align="center" valign="top" width="50%">
+<a href="./video-storyboard"><img src="./video-storyboard/examples/storyboard-preview.svg" alt="영상 스토리보드 편집기 예시" width="100%"></a><br>
+<b><a href="./video-storyboard">영상 스토리보드 편집기</a></b><br>
+<sub>재생되는 스토리보드에 씬별로 고칠 점 적고 바로 반영</sub>
 </td>
 </tr>
 </table>

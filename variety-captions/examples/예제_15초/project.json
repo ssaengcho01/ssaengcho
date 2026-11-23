@@ -1,0 +1,28 @@
+{
+  "output": "예제_15초_자막.mp4",
+  "sources": [
+    "clip1.mp4",
+    "clip2.mp4",
+    "clip3.mp4"
+  ],
+  "width": 1280, "height": 720, "fps": 24,
+  "audio": "original",
+  "duration": 15,
+  "cuts": [
+    {"src": 2, "start": 0.8,   "end": 2.0,  "note": "옆얼굴"},
+    {"src": 2, "start": 2.9,   "end": 4.8,  "note": "짚라인 뛰어내리는 1인칭"},
+    {"src": 2, "start": 5.63,  "end": 7.6,  "note": "밑에서 본 짚라인 비행"},
+    {"src": 2, "start": 12.35, "end": 14.2, "note": "버기 운전석"},
+    {"src": 2, "start": 14.3,  "end": 16.3, "note": "숲길 1인칭"},
+    {"src": 2, "start": 8.7,   "end": 10.2, "note": "버기 정면 질주"},
+    {"src": 1, "start": 23.6,  "end": 25.4, "note": "슬로모션 진흙 바퀴"},
+    {"src": 2, "start": 25.1,  "end": 28.0, "note": "석양 패러글라이딩"}
+  ],
+  "subtitles": [
+    {"id": 1, "style": "caption",   "start": 0.15,  "end": 1.2,  "text": "{설마...} 진짜 뛰어?"},
+    {"id": 2, "style": "pop",       "start": 1.35,  "end": 3.1,  "text": "으아아악!", "y": 0.35, "size": 150},
+    {"id": 3, "style": "caption",   "start": 5.15,  "end": 6.92, "text": "이번엔 {버기 운전대} 잡았다"},
+    {"id": 4, "style": "caption",   "start": 9.0,   "end": 10.42,"text": "{속도감} 최고"},
+    {"id": 5, "style": "handwrite", "start": 12.45, "end": 15.0, "text": "오늘의 마무리는 / 노을 속 하늘 산책", "x": 0.086, "y": 0.125}
+  ]
+}

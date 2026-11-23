@@ -35,7 +35,11 @@ AI 디자인 크리에이터 **쌩초(@ssaengcho)** 가 직접 만들어 쓰는 
 <b><a href="./image-to-fonts">이미지로 폰트 만들기</a></b><br>
 <sub>폰트 견본 시트 이미지를 설치 가능한 .otf 폰트로</sub>
 </td>
-<td width="50%"></td>
+<td align="center" valign="top" width="50%">
+<a href="./variety-captions"><img src="./variety-captions/examples/variety-captions-preview.jpg" alt="예능 자막 하이라이트 예시" width="100%"></a><br>
+<b><a href="./variety-captions">예능 자막 하이라이트</a></b><br>
+<sub>클립 여러 개를 짧게 묶고 통통 튀는 예능 자막까지</sub>
+</td>
 </tr>
 </table>
 

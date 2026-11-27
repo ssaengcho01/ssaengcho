@@ -41,6 +41,14 @@ AI 디자인 크리에이터 **쌩초(@ssaengcho)** 가 직접 만들어 쓰는 
 <sub>클립 여러 개를 짧게 묶고 통통 튀는 예능 자막까지</sub>
 </td>
 </tr>
+<tr>
+<td align="center" valign="top" width="50%">
+<a href="./daily-work-log"><img src="./daily-work-log/examples/work-log-preview.svg" alt="날짜별 누적 업무일지 예시" width="100%"></a><br>
+<b><a href="./daily-work-log">날짜별 누적 업무일지</a></b><br>
+<sub>하루 기록을 시간대별 업무일지로, HTML 한 파일에 날짜별로 쌓기</sub>
+</td>
+<td></td>
+</tr>
 </table>
 
 ## 설치 방법 (Claude/GPT)

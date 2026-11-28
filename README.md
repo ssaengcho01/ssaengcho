@@ -2,6 +2,12 @@
 
 AI 디자인 크리에이터 **쌩초(@ssaengcho)** 가 직접 만들어 쓰는 Claude/GPT 스킬 파일을 나눠요.
 
+## 웹 도구
+
+설치 없이 크롬에서 바로 쓰는 무료 도구예요.
+
+- **[쌩초 폰트 도구](https://ssaengcho01.github.io/ssaengcho/font-tools/)** · 내 PC 폰트 한눈에 보기 + AI로 그린 글자 이미지를 진짜 폰트(.otf)로 만들기 ([설명](./font-tools))
+
 ## 스킬 목록
 
 <table>

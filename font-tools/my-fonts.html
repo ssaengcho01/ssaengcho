@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Font Previewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f5f7;--bg2:#fff;--bg3:#ebebed;
+  --border:rgba(0,0,0,.08);--border2:rgba(0,0,0,.18);
+  --text:#111114;--text2:#6b6b78;--text3:#b0b0ba;
+  --accent:#5b4ef0;--accent-s:rgba(91,78,240,.1);
+  --red:#d94f6e;--red-s:rgba(217,79,110,.08);
+  --green:#16a34a;--green-s:rgba(22,163,74,.1);
+  --amber:#d97706;--amber-s:rgba(217,119,6,.1);
+  --r:10px;--rs:6px;
+  --preview-size:28px;
+}
+html{font-size:14px}
+body{font-family:'Inter','Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+header{border-bottom:1px solid var(--border);background:var(--bg2);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:15px;font-weight:600;letter-spacing:-.3px;display:flex;align-items:center;gap:12px}
+.logo svg{flex-shrink:0}
+.logo-title{font-size:20px;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1.2;cursor:pointer}
+.logo-title:hover{color:var(--accent)}
+.logo-sub{font-size:11px;color:var(--text3);font-weight:400;margin-top:1px}
+.badge{font-size:11px;padding:3px 9px;border-radius:99px;background:var(--accent-s);color:var(--accent);font-weight:500}
+
+/* STEP INDICATOR */
+.steps{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;position:sticky;top:64px;z-index:97}
+.hint-block{display:flex;align-items:center;gap:8px}
+.copy-hint-txt{font-size:11px;color:var(--text3);white-space:nowrap}
+.rc{display:flex;align-items:center;gap:10px}
+.stats{font-size:14px;font-weight:600;color:var(--accent);white-space:nowrap}
+.step{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text3);padding:5px 12px;border-radius:99px;border:1px solid var(--border);transition:all .2s}
+.step.active{color:var(--accent);border-color:var(--accent);background:var(--accent-s);font-weight:500}
+.step.done{color:var(--green);border-color:rgba(22,163,74,.3);background:var(--green-s)}
+.step.amber{color:var(--amber);border-color:rgba(217,119,6,.4);background:rgba(217,119,6,.1);font-weight:500}
+.step.amber .step-num{background:var(--amber);color:#fff}
+.step-num{width:18px;height:18px;border-radius:50%;background:var(--bg3);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.step.active .step-num{background:var(--accent);color:#fff}
+.step.done .step-num{background:var(--green);color:#fff}
+.step-arrow{color:var(--text3);font-size:12px}
+
+.toolbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:11px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;z-index:95}
+.subbar{background:var(--bg2);padding:8px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border);position:sticky;z-index:90}
+.inp-wrap{flex:1;min-width:200px;position:relative}
+.inp-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--amber);pointer-events:none}
+#pt{border-color:rgba(217,119,6,.35);background:#fffbf5}
+#pt:focus{border-color:var(--amber);background:#fff}
+input[type="text"]{width:100%;height:36px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:13px;padding:0 12px 0 32px;outline:none;font-family:inherit;transition:border-color .15s,background .15s}
+input[type="text"]::placeholder{color:var(--text3)}
+input[type="text"]:focus{border-color:var(--border2);background:var(--bg2)}
+.sw{position:relative;width:160px;flex-shrink:0}
+.sw svg{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.sw input{padding-left:28px}
+.sz{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sz-lbl{font-size:12px;color:var(--text2);white-space:nowrap}
+input[type="range"]{-webkit-appearance:none;width:90px;height:3px;background:var(--bg3);border-radius:2px;outline:none;cursor:pointer;border:1px solid var(--border)}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px var(--accent)}
+.sz-val{font-size:12px;color:var(--text);font-weight:500;min-width:32px;font-variant-numeric:tabular-nums}
+.btn{height:36px;padding:0 15px;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:opacity .15s,transform .1s;flex-shrink:0;white-space:nowrap}
+.btn:hover{opacity:.85}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn svg{width:14px;height:14px}
+.btn-ghost{background:var(--bg2);color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);opacity:1}
+
+.subbar{background:var(--bg2);padding:8px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border);position:sticky;z-index:90}
+.filters{display:flex;gap:5px;flex-wrap:wrap}
+.fbtn{height:26px;padding:0 11px;font-size:12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;transition:all .12s;font-family:inherit}
+.fbtn:hover{border-color:var(--border2);color:var(--text)}
+.fbtn.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:500}
+.fbtn.warn.on{background:var(--amber);border-color:var(--amber)}
+.dtog{display:flex;gap:3px}
+.dbtn{width:26px;height:26px;border-radius:var(--rs);border:1px solid var(--border);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text3);transition:all .12s}
+.dbtn.on{border-color:var(--border2);color:var(--text);background:var(--bg3)}
+.dbtn svg{width:13px;height:13px}
+
+.progress-wrap{padding:20px 24px;display:none}
+.progress-bar-bg{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:10px}
+.progress-bar-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .15s ease;width:0}
+.progress-msg{font-size:12px;color:var(--text2);text-align:center}
+
+main{flex:1;padding:20px 24px;display:flex;flex-direction:column}
+.welcome{border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);padding:48px 24px;text-align:center;max-width:460px;margin:auto}
+.welcome .ic{width:48px;height:48px;border-radius:12px;background:var(--accent-s);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--accent)}
+.welcome h2{font-size:16px;font-weight:600;margin-bottom:8px}
+.welcome p{font-size:13px;color:var(--text2);line-height:1.65;margin-bottom:22px}
+.welcome .btn{margin:0 auto}
+.font-tools-wrap{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.install-guide-inline{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2);background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;line-height:1.5}
+.install-guide-inline svg{flex-shrink:0;color:var(--amber)}
+.drop-zone{border:2px dashed rgba(91,78,240,.25);border-radius:var(--r);padding:20px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:all .15s;background:var(--bg2);cursor:pointer;text-align:center}
+.drop-zone:hover{border-color:var(--accent);background:var(--accent-s)}
+.drop-zone.over{border-color:var(--accent);background:var(--accent-s)}
+.drop-zone-icon{color:var(--text3);display:flex;align-items:center;justify-content:center}
+.drop-title{font-size:13px;font-weight:600;color:var(--text2);margin:0}
+.drop-sub{font-size:11px;color:var(--text3);margin:0}
+.drop-btns{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
+.drop-classify-label{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.drop-select{height:28px;padding:0 8px;border:1px solid var(--border);border-radius:var(--rs);font-size:12px;font-family:inherit;background:var(--bg3);color:var(--text);cursor:pointer;outline:none}
+.drop-file-btn{height:28px;padding:0 12px;font-size:12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer}
+.welcome .hint{margin-top:18px;font-size:11px;color:var(--text3);line-height:1.6}
+.install-guide{margin-top:16px;border:1px solid rgba(91,78,240,.2);border-radius:var(--r);background:var(--accent-s);text-align:left;overflow:hidden}
+.install-guide-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--accent);padding:10px 14px;border-bottom:1px solid rgba(91,78,240,.15)}
+.install-guide-body{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.install-guide-body p{font-size:12px;color:var(--text2);line-height:1.6}
+.install-steps{display:flex;flex-direction:column;gap:6px}
+.install-step{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text);line-height:1.5}
+.install-num{width:18px;height:18px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.install-note{font-size:11px;color:var(--text3);line-height:1.6;padding-top:6px;border-top:1px solid rgba(91,78,240,.1)}
+.err{border:1px solid rgba(217,79,110,.25);border-radius:var(--r);background:var(--red-s);padding:14px 18px;display:flex;gap:10px;align-items:flex-start;margin-bottom:18px}
+.err svg{flex-shrink:0;color:var(--red);margin-top:1px}
+.err p{font-size:13px;line-height:1.55}
+
+/* banner for mapping step */
+.banner{border:1px solid rgba(217,119,6,.3);border-radius:var(--r);background:var(--amber-s);padding:14px 18px;margin-bottom:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.banner svg{flex-shrink:0;color:var(--amber)}
+.banner .bt{flex:1;min-width:200px}
+.banner .bt h3{font-size:13px;font-weight:600;margin-bottom:3px}
+.banner .bt p{font-size:12px;color:var(--text2);line-height:1.5}
+.banner .ba{display:flex;gap:8px;flex-wrap:wrap}
+
+#grid{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+#grid.c1{grid-template-columns:1fr}
+#grid.c2{grid-template-columns:repeat(2,1fr)}
+#grid.c3{grid-template-columns:repeat(3,1fr)}
+#grid.c4{grid-template-columns:repeat(4,1fr)}
+
+.fc{background:var(--bg2);padding:14px 16px;cursor:pointer;transition:background .1s;display:flex;flex-direction:column;justify-content:space-between;gap:8px;min-height:78px;position:relative;overflow:hidden;content-visibility:auto;contain-intrinsic-size:0 90px}
+.fc:hover{background:var(--bg3)}
+.fc:hover .ch{opacity:1}
+.fc.fav{border-left:2px solid var(--accent)}
+.fc.unmapped{border-left:2px solid var(--amber)}
+.fp{color:var(--text);line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;word-break:break-word;font-size:var(--preview-size)}
+.ff{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.fn-wrap{overflow:hidden;flex:1;min-width:0}
+.fn-main{font-size:12px;color:var(--text);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;font-family:'Noto Sans KR','Inter',sans-serif}
+.fn-sub{font-size:10px;color:var(--text3);font-family:'Inter',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;margin-top:1px}
+.fn-only{font-size:11px;color:var(--text2);font-family:'Inter',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.fbadge{display:inline-block;font-size:9px;padding:1px 5px;border-radius:99px;margin-left:5px;vertical-align:middle;font-weight:500}
+.fbadge.file{background:var(--green-s);color:var(--green)}
+.fbadge.manual{background:var(--accent-s);color:var(--accent)}
+.fav-b{background:none;border:none;cursor:pointer;color:var(--text3);padding:2px;border-radius:4px;line-height:1;transition:color .12s,transform .1s;flex-shrink:0}
+.fav-b:hover{color:var(--red);transform:scale(1.2)}
+.fav-b.on{color:var(--red)}
+.fav-b svg{width:13px;height:13px;display:block}
+.ch{position:absolute;top:8px;right:9px;font-size:10px;color:var(--text3);opacity:0;transition:opacity .12s;pointer-events:none}
+
+/* mapping input inside card */
+.map-row{display:flex;gap:5px;align-items:center;margin-top:0}
+.map-row input{height:28px;font-size:12px;padding:0 8px;flex:1;min-width:0}
+.map-row .map-save{height:28px;padding:0 9px;font-size:11px;border-radius:var(--rs);border:none;background:var(--accent);color:#fff;cursor:pointer;font-family:inherit;flex-shrink:0;font-weight:500}
+.map-row .map-save:hover{opacity:.85}
+.map-row .map-en{height:28px;padding:0 8px;font-size:11px;border-radius:var(--rs);border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:inherit;flex-shrink:0}
+.map-row .map-en:hover{border-color:var(--border2);color:var(--text)}
+.map-check{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;flex-shrink:0;user-select:none}
+.map-check input{width:13px;height:13px;cursor:pointer;accent-color:var(--accent)}
+.unmapped-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 14px;background:rgba(217,119,6,.06);border-bottom:1px solid rgba(217,119,6,.15);grid-column:1/-1}
+.unmapped-toolbar span{font-size:12px;color:var(--amber)}
+.btn-alLen{height:32px;padding:0 16px;font-size:12px;border-radius:var(--rs);border:none;background:var(--amber);color:#fff;cursor:pointer;font-family:inherit;font-weight:600;transition:opacity .12s;white-space:nowrap}
+.btn-alLen:hover{opacity:.85}
+.btn-alLen:active{opacity:.7}
+
+.empty{padding:56px 24px;text-align:center;color:var(--text3);font-size:13px;background:var(--bg2);grid-column:1/-1}
+.empty svg{margin-bottom:10px;opacity:.35}
+.empty.good svg{color:var(--green);opacity:.6}
+
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--text);color:var(--bg2);font-size:12px;font-weight:500;padding:8px 18px;border-radius:99px;opacity:0;transition:transform .18s ease,opacity .18s ease;pointer-events:none;white-space:nowrap;z-index:9999}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{animation:spin .8s linear infinite}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg3);border-radius:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;min-height:40px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+footer{border-top:1px solid var(--border);background:var(--bg2);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-left{display:flex;flex-direction:column;gap:6px}
+.footer-name{font-size:13px;font-weight:600}
+.footer-links{display:flex;gap:12px}
+.footer-links a{font-size:12px;color:var(--text2);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .15s}
+.footer-links a:hover{color:var(--accent)}
+.footer-links a svg{width:13px;height:13px}
+.footer-right{text-align:right}
+.footer-copy{font-size:11px;color:var(--text3);line-height:1.7}
+.footer-copy strong{color:var(--text2);font-weight:500}
+@media(max-width:640px){
+  .toolbar,.subbar,.steps{padding:10px 14px} main{padding:14px}
+  #grid.c3,#grid.c4{grid-template-columns:repeat(2,1fr)}
+  footer{flex-direction:column;align-items:flex-start}
+  .footer-right{text-align:left}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="8" fill="#5b4ef0"/>
+      <text x="5" y="22" font-family="serif" font-size="14" font-weight="700" fill="white">가</text>
+      <text x="15" y="22" font-family="sans-serif" font-size="11" font-weight="700" fill="rgba(255,255,255,0.7)">A</text>
+      <text x="22" y="22" font-family="monospace" font-size="10" font-weight="400" fill="rgba(255,255,255,0.45)">a</text>
+    </svg>
+    <div>
+      <div class="logo-title" onclick="goAll()">내 폰트 다 모여</div>
+      <div class="logo-sub">Font Previewer by @ssaengcho</div>
+    </div>
+  </div>
+  <span class="badge" id="badge">0 폰트</span>
+</header>
+
+<div class="steps" id="steps" style="display:none">
+  <div class="step active" id="step1"><span class="step-num">1</span> 폰트 불러오기</div>
+  <span class="step-arrow">→</span>
+  <div class="step" id="step2"><span class="step-num">2</span> 한글명 매핑</div>
+  <span class="step-arrow">→</span>
+  <div class="step" id="step3"><span class="step-num">3</span> 미리보기</div>
+</div>
+
+<div class="toolbar" id="toolbar" style="display:none">
+  <div class="inp-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    <input type="text" id="pt" placeholder="문구를 입력하세요  Please enter your text" value="">
+  </div>
+  <div class="sz">
+    <span class="sz-lbl">크기</span>
+    <input type="range" id="ss" min="12" max="80" value="28" step="1">
+    <span class="sz-val" id="sv">28px</span>
+  </div>
+  <div class="sw">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="si" placeholder="폰트 검색…">
+  </div>
+  <button class="btn btn-ghost" id="lb" onclick="loadFonts()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+    새로고침
+  </button>
+</div>
+
+<div class="subbar" id="subbar" style="display:none">
+  <div class="filters" id="filters">
+    <button class="fbtn on"  data-f="all">전체</button>
+    <button class="fbtn"     data-f="ko">한글</button>
+    <button class="fbtn"     data-f="en">영문</button>
+    <button class="fbtn warn" data-f="unmapped">미확인 <span id="umc"></span></button>
+    <button class="fbtn"     data-f="fav">즐겨찾기 <span id="fc"></span></button>
+  </div>
+  <div class="rc">
+    <div class="hint-block">
+      <span class="copy-hint-txt">폰트 클릭 시 폰트명 복사 · 새 폰트는 브라우저의 <strong style="color:var(--text2)">모든 창을 껐다 켜야</strong> 반영돼요</span>
+      <span class="stats" id="st"></span>
+    </div>
+    <div class="dtog">
+      <button class="dbtn"    title="1열" onclick="setC(1,this)"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="11" height="4" rx="1"/><rect x="1" y="7" width="11" height="4" rx="1"/></svg></button>
+      <button class="dbtn"    title="2열" onclick="setC(2,this)"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="4.5" height="4.5" rx="1"/><rect x="7.5" y="1" width="4.5" height="4.5" rx="1"/><rect x="1" y="7.5" width="4.5" height="4.5" rx="1"/><rect x="7.5" y="7.5" width="4.5" height="4.5" rx="1"/></svg></button>
+      <button class="dbtn on" title="3열" onclick="setC(3,this)"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="2.5" height="2.5" rx=".5"/><rect x="5.25" y="1" width="2.5" height="2.5" rx=".5"/><rect x="9.5" y="1" width="2.5" height="2.5" rx=".5"/><rect x="1" y="5.25" width="2.5" height="2.5" rx=".5"/><rect x="5.25" y="5.25" width="2.5" height="2.5" rx=".5"/><rect x="9.5" y="5.25" width="2.5" height="2.5" rx=".5"/><rect x="1" y="9.5" width="2.5" height="2.5" rx=".5"/><rect x="5.25" y="9.5" width="2.5" height="2.5" rx=".5"/><rect x="9.5" y="9.5" width="2.5" height="2.5" rx=".5"/></svg></button>
+      <button class="dbtn"    title="4열" onclick="setC(4,this)"><svg viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="2" height="2" rx=".3"/><rect x="4" y="1" width="2" height="2" rx=".3"/><rect x="7" y="1" width="2" height="2" rx=".3"/><rect x="10" y="1" width="2" height="2" rx=".3"/><rect x="1" y="4" width="2" height="2" rx=".3"/><rect x="4" y="4" width="2" height="2" rx=".3"/><rect x="7" y="4" width="2" height="2" rx=".3"/><rect x="10" y="4" width="2" height="2" rx=".3"/><rect x="1" y="7" width="2" height="2" rx=".3"/><rect x="4" y="7" width="2" height="2" rx=".3"/><rect x="7" y="7" width="2" height="2" rx=".3"/><rect x="10" y="7" width="2" height="2" rx=".3"/><rect x="1" y="10" width="2" height="2" rx=".3"/><rect x="4" y="10" width="2" height="2" rx=".3"/><rect x="7" y="10" width="2" height="2" rx=".3"/><rect x="10" y="10" width="2" height="2" rx=".3"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<div class="progress-wrap" id="pw">
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="pbf"></div></div>
+  <div class="progress-msg" id="pm">폰트 메타데이터 읽는 중…</div>
+</div>
+
+<main>
+  <div class="welcome" id="wc">
+    <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg></div>
+    <h2>시스템 폰트를 불러오세요</h2>
+    <p>설치된 모든 폰트를 미리볼 수 있어요.<br>폰트 파일에서 한글 이름을 직접 읽어옵니다.</p>
+    <button class="btn" onclick="loadFonts()" style="margin:0 auto;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0018 9h-1.26A8 8 0 103 16.29"/></svg>
+      폰트 불러오기
+    </button>
+
+  </div>
+  <div id="ea"></div>
+  <div id="banner-area"></div>
+
+  <!-- 폰트 목록 페이지에서 보이는 안내 + 업로드 -->
+  <div id="font-tools" style="display:none">
+    <div class="font-tools-wrap">
+      <div class="install-guide-inline">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>폰트가 목록에 안 보인다면? Chrome 모든 창 닫기 → 트레이 Chrome 아이콘 우클릭 → <strong>종료</strong> 후 재시작</span>
+      </div>
+      <label class="drop-zone" id="drop-zone" for="file-input">
+        <div class="drop-zone-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <p class="drop-title">설치했는데 목록에 없는 폰트 파일을 여기에 드래그하거나 클릭하세요</p>
+        <p class="drop-sub">TTF · OTF 지원</p>
+        <div class="drop-btns" onclick="event.stopPropagation()">
+          <label class="drop-classify-label">분류:
+            <select id="drop-target" class="drop-select">
+              <option value="ko">한글</option>
+              <option value="en">영문</option>
+            </select>
+          </label>
+        </div>
+        <input type="file" id="file-input" accept=".ttf,.otf" multiple style="display:none" onchange="handleFiles(this.files)">
+      </label>
+    </div>
+  </div>
+
+  <div id="grid" class="c3" style="display:none"></div>
+</main>
+<div id="toast"></div>
+
+<footer>
+  <div class="footer-left">
+    <span class="footer-name">@ssaengcho</span>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/ssaengcho" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>Instagram</a>
+      <a href="https://www.threads.net/@ssaengcho" target="_blank"><svg viewBox="0 0 192 192" width="13" height="13" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.036l13.779 9.452c5.73-8.695 14.724-10.548 21.348-10.548h.229c8.249.053 14.474 2.452 18.503 7.129 2.932 3.405 4.893 8.111 5.864 14.05-7.314-1.243-15.224-1.626-23.68-1.14-23.82 1.371-39.134 15.264-38.105 34.568.522 9.792 5.4 18.216 13.735 23.719 7.047 4.652 16.124 6.927 25.557 6.412 12.458-.683 22.231-5.436 29.049-14.127 5.178-6.6 8.453-15.153 9.899-25.93 5.937 3.583 10.337 8.298 12.767 13.966 4.132 9.635 4.373 25.468-8.546 38.376-11.319 11.308-24.925 16.2-45.488 16.351-22.809-.169-40.06-7.484-51.275-21.741C35.236 139.966 29.808 120.682 29.605 96c.203-24.682 5.63-43.966 16.133-57.317C56.954 24.426 74.204 17.11 97.013 16.941c22.975.17 40.526 7.52 52.171 21.848 5.71 7.025 10.015 15.86 12.853 26.162l16.147-4.308c-3.44-12.68-8.853-23.606-16.219-32.668C147.036 9.607 125.202.195 97.07 0h-.113C68.882.195 47.292 9.643 32.788 28.08 19.882 44.485 13.224 67.315 13.001 96v.027c.224 28.684 6.882 51.514 19.788 67.918C47.292 182.358 68.882 191.806 96.957 192h.113c24.96-.173 42.554-6.708 57.048-21.189 18.963-18.945 18.392-42.692 12.142-57.27-4.484-10.454-13.033-18.945-24.723-24.553zm-51.005 46.945c-10.44.572-21.289-4.1-21.82-14.158-.391-7.344 5.228-15.533 22.276-16.525 1.949-.113 3.862-.168 5.74-.168 6.197 0 12.003.606 17.282 1.783-1.966 24.505-13.123 28.49-23.478 29.068z"/></svg>Threads</a>
+      <a href="https://www.youtube.com/@ssaengcho" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.4a2.78 2.78 0 001.95-1.97A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>YouTube</a>
+    </div>
+  </div>
+  <div class="footer-right">
+    <p class="footer-copy">© 2026 <strong>@ssaengcho</strong>. All rights reserved.<br>이 도구는 <strong>@ssaengcho</strong>가 제작했습니다. 활용 시 반드시 출처를 밝혀주세요.</p>
+  </div>
+</footer>
+
+<script>
+// ── 기본 한글 폰트 사전 (내장) ───────────────────────────────────────────────
+const KO_DICT = {
+  // 김정철
+  "kim jung chul gothic":"김정철 고딕","kim jung chul myungjo":"김정철 명조","kim jung chul script":"김정철 스크립트",
+  // 레페리
+  "leferi base type":"레페리 베이스","leferi point type":"레페리 포인트","leferi point type special":"레페리 포인트 스페셜","leferi point type white":"레페리 포인트 화이트",
+  // 어비
+  "uhbee jung":"어비 정","uhbee zziba":"어비 찌바",
+  // 라인/갈무리/납작/필승/파셜
+  "line seed sans kr":"라인씨드산스 KR","galmuri7":"갈무리7","galmuri9":"갈무리9","galmuri11":"갈무리11",
+  "napjakblock":"납작블록","pilseung gothic":"필승고딕","partial sans kr":"파셜산스 KR",
+  // 고운/검은/MBC
+  "gowun batang":"고운바탕","gowun dodum":"고운돋움","black han sans":"검은고딕","mbc 1961":"MBC1961체",
+  // 프리텐다드/SUIT
+  "pretendard variable":"프리텐다드 Variable","pretendard":"프리텐다드","pretendard std":"프리텐다드 STD",
+  "suit":"SUIT","suit variable":"SUIT Variable",
+  // 페이퍼로지/베이글
+  "paperlogy":"페이퍼로지","paperozi":"페이퍼로지","bagel fat one":"베이글",
+  // 디자인 개인폰트류
+  "grassgarden":"잔디정원체","softpink":"소프트핑크","dinbol":"딘볼","dinmed":"딘미드","rumpi":"룸피","sansta":"산스타","amanda art design":"아만다 아트디자인",
+  // ── 243개 진단 목록에서 추가 분류된 한글 폰트 ──
+  // 나눔 계열
+  "nanum gothic":"나눔고딕","nanum myeongjo":"나눔명조","nanum barun gothic":"나눔바른고딕","nanum square":"나눔스퀘어","nanum square round":"나눔스퀘어라운드","nanum pen script":"나눔펜스크립트","nanum brush script":"나눔붓글씨",
+  // 윈도우 기본 한글
+  "malgun gothic":"맑은 고딕","malgun gothic semilight":"맑은 고딕 세미라이트",
+  "gulim":"굴림","gulimche":"굴림체","dotum":"돋움","dotumche":"돋움체","batang":"바탕","batangche":"바탕체","gungsuh":"궁서","gungsuhche":"궁서체","new gulim":"새굴림",
+  // 마켓/기업 폰트
+  "gmarket sans":"G마켓 산스","spoqa han sans neo":"스포카한산스Neo",
+  "kopubworld batang":"KoPub바탕체","kopubworld dotum":"KoPub돋움체","iropke batang":"이롭게 바탕체","ridi batang":"리디바탕","sb aggro":"SB어그로체",
+  "apple sd gothic neo":"Apple SD 산돌고딕 Neo","bareun batang":"바른바탕","bareun gothic":"바른고딕","s-core dream":"에스코어드림",
+  // 배민
+  "tvn enjoystory":"tvN 즐거운이야기","bm hanna pro":"BM 한나체 Pro","bm dohyeon":"BM 도현체","bm euljiro":"BM 을지로체","bm jua":"BM 주아체","bm yeonsung":"BM 연성체",
+  "kcc eunyoung":"KCC 은영체","kcc-mustard":"KCC 머스타드",
+};
+
+// ── 영문 폰트 강제 분류 (한글처럼 오인되지 않게) ──────────────────────────────
+// 243개 목록 중 명백한 해외/중립 영문 폰트 → 항상 영문 취급
+const EN_FORCE = new Set([
+  "alagambe","agency fb","algerian","allura","archivo","arial","arial rounded mt","bad script","ballpark weiner","barcode font","baskerville old face","bauhaus 93","bell mt","berlin sans fb","bernard mt","bloome","bodoni mt","bodoni mt poster","book antiqua","bookman old style","bookshelf symbol 7","bradley hand itc","britannic","broadway","brush script mt","calibri","californian fb","calisto mt","cambria","cambria math","candara","carattere","castellar","caveat","centaur","century","century gothic","century schoolbook","chiller","cinzel","colonna mt","comic sans ms","consolas","constantia","cooper","copperplate gothic","corbel","courier new","courier prime","creepster","curlz mt","damion","dancing script","dubai","eater","ebrima","edwardian script itc","elephant","engravers mt","eras itc","exquisite corpse","fathony king","felix titling","fiendish","footlight mt","forte","forum","frank ruhl libre","franklin gothic","franklin gothic book","freestyle script","french script mt","froadmile","gabriola","gadugi","garamond","georgia","gigi","gill sans","gill sans mt","gloucester mt","goudy old style","goudy stout","google sans","google sans flex","grey qo","haettenschweiler","halaney demo","happy vibes","happy vibes outline","harlow solid","harrington","harshita","heebo","henny penny","hertine","high summit","high tower text","hololens mdl2 assets","homemade apple","impact","imprint mt shadow","informal roman","ink free","jasper daniels","javanese text","jokerman","josefin sans","juice itc","kristen itc","kunstler script","leelawadee","leelawadee ui","lemon","lilita one","lucida bright","lucida calligraphy","lucida console","lucida fax","lucida handwriting","lucida sans","lucida sans typewriter","lucida sans unicode","luckiest guy","magneto","maiandra gd","marlett","matrical","matura mt script capitals","maytra","microsoft himalaya","microsoft jhenghei","microsoft jhenghei ui","microsoft new tai lue","microsoft phagspa","microsoft sans serif","microsoft tai le","microsoft uighur","microsoft yahei","microsoft yahei ui","microsoft yi baiti","minglieu_hkscs-extb","minglieu-extb","mistral","modern no. 20","mongolian baiti","monoton","monotype corsiva","mr dafoe","ms outlook","ms reference sans serif","ms reference specialty","mt extra","mv boli","myanmar text","newyork","niagara engraved","niagara solid","nirmala ui","octavian","ocr a","old english text mt","oleo script swash caps","onyx","oswald","palace script mt","palatino linotype","papyrus","parchment","perpetua","perpetua titling mt","permanent marker","petit formal script","playbill","plus jakarta sans","pmingliu-extb","poor richard","pristina","quentin","racing sans one","rage","ravie","rockwell","roustel","rubik bubbles","rubik distressed","rubik wet paint","script mt","segoe mdl2 assets","segoe print","segoe script","segoe ui","segoe ui emoji","segoe ui historic","segoe ui symbol","showcard gothic","shrikhand","signerica","signika","signika negative","sitka banner","sitka display","sitka heading","sitka small","sitka subheading","sitka text","slackey","snap itc","stencil","suisse int'l","sweet splendor","sylfaen","symbol","tahoma","tempus sans itc","times new roman","trebuchet ms","tw cen mt","viner hand itc","vivaldi","vladimir script","webdings","wide latin","wingdings","wingdings 2","wingdings 3","yeseva one","zwadobef","bahnschrift",
+  // CJK이지만 한국 폰트 아님 (중국어/일본어)
+  "ms gothic","ms pgothic","ms ui gothic","yu gothic","yu gothic ui","simsun","simsun-extb","simsun-extg","nsimsun","mingliu","pmingliu","aafeiniaoji",
+]);
+// 사용자 매핑 (localStorage)
+let userMap = JSON.parse(localStorage.getItem('fp_usermap') || '{}');
+
+function dictLookup(family){
+  const key = family.toLowerCase().trim();
+  if (userMap[key] === '__EN__') return null; // 영문 강제
+  if (userMap[key]) return userMap[key];
+  if (KO_DICT[key]) return KO_DICT[key];
+  for (const [k,v] of Object.entries(KO_DICT)){
+    if (key.startsWith(k)){
+      const suffix = family.trim().slice(k.length).trim();
+      return suffix ? `${v} ${suffix}` : v;
+    }
+  }
+  return null;
+}
+
+// ── Canvas로 한글 지원 여부 감지 ─────────────────────────────────────────────
+// "가" 렌더 픽셀 vs "■"(없는 문자) 렌더 픽셀 비교 → 다르면 한글 지원
+const _canvas = document.createElement('canvas');
+_canvas.width = 24; _canvas.height = 24;
+const _ctx = _canvas.getContext('2d');
+
+// 기준: 시스템 기본 폰트로 "가" 와 "■" 픽셀 캐싱
+function _getPixels(fontFamily, char) {
+  _ctx.clearRect(0, 0, 24, 24);
+  _ctx.font = `16px '${fontFamily}'`;
+  _ctx.fillStyle = '#000';
+  _ctx.fillText(char, 2, 18);
+  return _ctx.getImageData(0, 0, 24, 24).data.join(',');
+}
+
+// 기준 폴백 픽셀 캐시 (시스템 기본 폰트)
+const _fallbackKo  = _getPixels('sans-serif', '가');
+const _fallbackRef = _getPixels('sans-serif', '■');
+
+function supportsKorean(fontFamily) {
+  try {
+    const koPixels  = _getPixels(fontFamily, '가');
+    const refPixels = _getPixels(fontFamily, '■');
+    // "가"가 폴백과 다르고 (자체 글리프 있음), "■"와도 달라야 (tofu 아님)
+    return koPixels !== _fallbackKo && koPixels !== refPixels;
+  } catch(e) { return false; }
+}
+
+// ── name table 파서 ──────────────────────────────────────────────────────────
+async function getKoreanName(fontData){
+  try{
+    const buf = await fontData.blob().then(b=>b.arrayBuffer());
+    const view = new DataView(buf);
+    let offset=0;
+    if (view.getUint32(0)===0x74746366) offset=view.getUint32(12);
+    const numTables=view.getUint16(offset+4);
+    let nameOffset=-1;
+    for(let i=0;i<numTables;i++){
+      const t=offset+12+i*16;
+      const tag=String.fromCharCode(view.getUint8(t),view.getUint8(t+1),view.getUint8(t+2),view.getUint8(t+3));
+      if(tag==='name'){nameOffset=view.getUint32(t+8);break;}
+    }
+    if(nameOffset<0) return null;
+    const count=view.getUint16(nameOffset+2);
+    const strBase=nameOffset+view.getUint16(nameOffset+4);
+    const cand={};
+    for(let i=0;i<count;i++){
+      const r=nameOffset+6+i*12;
+      const pid=view.getUint16(r),eid=view.getUint16(r+2),lid=view.getUint16(r+4),nid=view.getUint16(r+6),len=view.getUint16(r+8),so=view.getUint16(r+10);
+      if(nid!==1&&nid!==4) continue;
+      let str=null;
+      if(pid===3&&eid===1&&lid===0x0412){
+        const b=new Uint8Array(buf,strBase+so,len);str='';
+        for(let j=0;j<b.length;j+=2) str+=String.fromCharCode((b[j]<<8)|b[j+1]);
+      } else if(pid===1&&lid===11){
+        const b=new Uint8Array(buf,strBase+so,len);
+        str=new TextDecoder('euc-kr').decode(b);
+      }
+      if(str) cand[`${pid}-${nid}`]=str.trim();
+    }
+    return cand['3-4']||cand['3-1']||cand['1-4']||cand['1-1']||null;
+  }catch(e){return null;}
+}
+
+const KO=/[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318F]/;
+const hasKo=s=>KO.test(s);
+
+let allFonts=[];
+let favs=JSON.parse(localStorage.getItem('fp_favs')||'[]');
+let filter='all';
+let ptext=document.getElementById('pt').value;
+let fsize=28;
+let sq='';
+let cols=3;
+let loaded=false;
+
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+function setStep(n){
+  [1,2,3].forEach(i=>{
+    const el=document.getElementById('step'+i);
+    el.classList.remove('active','done','amber');
+    if(i<n) el.classList.add('done');
+    else if(i===n){
+      if(i===3) el.classList.add('amber');
+      else el.classList.add('active');
+    }
+  });
+  setTimeout(updateStickyTop, 0);
+}
+
+async function loadFonts(){
+  const btn=document.getElementById('lb');
+  const wb=document.querySelector('#wc .btn');
+  document.getElementById('steps').style.display='flex';
+  setStep(1);
+  // 새로고침 시 초기화
+  allFonts=[];
+  loaded=false;
+  if(wb){wb.disabled=true;wb.innerHTML=`<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> 불러오는 중…`;}
+  btn.disabled=true;
+
+  if(!('queryLocalFonts' in window)){
+    showErr('이 브라우저는 Local Font Access API를 지원하지 않습니다. <strong>Chrome 103+ 또는 Edge 103+</strong>에서 열어주세요.');
+    if(wb){wb.disabled=false;wb.innerHTML='폰트 불러오기';}
+    btn.disabled=false;return;
+  }
+  let raw;
+  try{ raw=await window.queryLocalFonts(); }
+  catch(e){
+    if(e.name==='NotAllowedError') showErr('폰트 접근 권한이 거부됐습니다. 주소창 왼쪽 자물쇠 → 사이트 설정 → 폰트 → 허용 후 새로고침하세요.');
+    else showErr('오류: '+e.message);
+    if(wb){wb.disabled=false;wb.innerHTML='폰트 불러오기';}
+    btn.disabled=false;return;
+  }
+
+  const seen=new Map();
+  for(const f of raw) if(!seen.has(f.family)) seen.set(f.family,f);
+  const unique=[...seen.values()];
+
+  document.getElementById('wc').style.display='none';
+  const pw=document.getElementById('pw'),pbf=document.getElementById('pbf'),pm=document.getElementById('pm');
+  pw.style.display='block';
+
+  const BATCH=20;const result=[];
+  for(let i=0;i<unique.length;i+=BATCH){
+    const batch=unique.slice(i,i+BATCH);
+    const res=await Promise.all(batch.map(async f=>{
+      const key=f.family.toLowerCase().trim();
+      const forcedEn=EN_FORCE.has(key) || userMap[key]==='__EN__';
+      const koName=forcedEn?null:await getKoreanName(f);
+      const dictName=(!koName&&!forcedEn)?dictLookup(f.family):null;
+      const finalName=koName||dictName||f.family;
+      return {
+        family:f.family,
+        display:finalName,
+        hasKoName: forcedEn?false:!!(finalName&&hasKo(finalName)),
+        source: forcedEn?'en':(koName?'file':(dictName?'manual':'none'))
+      };
+    }));
+    result.push(...res);
+    const pct=Math.round(((i+batch.length)/unique.length)*100);
+    pbf.style.width=pct+'%';
+    pm.textContent=`메타데이터 읽는 중… ${i+batch.length} / ${unique.length}`;
+    await new Promise(r=>setTimeout(r,0));
+  }
+  result.sort((a,b)=>a.display.localeCompare(b.display,'ko'));
+  allFonts=result;
+  loaded=true;
+  pw.style.display='none';
+  document.getElementById('ea').innerHTML='';
+  document.getElementById('toolbar').style.display='flex';
+  document.getElementById('subbar').style.display='flex';
+  document.getElementById('grid').style.display='grid';
+  document.getElementById('font-tools').style.display='block';
+  updateStickyTop();
+
+  // 미확인 폰트가 있으면 STEP 2 안내, 없으면 바로 STEP 3
+  const unmapped=allFonts.filter(f=>f.source==='none' && !hasKo(f.family));
+  if(unmapped.length>0){
+    setStep(2);
+    filter='unmapped';
+    syncFilterBtns();
+    showBanner(unmapped.length);
+  } else {
+    setStep(3);
+    filter='all';
+    syncFilterBtns();
+  }
+  renderFonts();
+
+  btn.disabled=false;
+}
+
+function showBanner(n){
+  document.getElementById('banner-area').innerHTML=`
+    <div class="banner">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+      <div class="bt">
+        <h3>한글명을 못 찾은 폰트가 ${n}개 있어요</h3>
+        <p>아래 카드에서 직접 한글 이름을 입력하면 영구 저장됩니다. 다 끝나면 "미리보기로" 버튼을 누르세요.</p>
+      </div>
+      <div class="ba">
+        <button class="btn" onclick="goPreview()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> 미리보기로</button>
+      </div>
+    </div>`;
+}
+
+function goAll(){
+  if(!loaded) return;
+  filter='all';
+  syncFilterBtns();
+  renderFonts();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goPreview(){
+  setStep(3);
+  filter='all';
+  syncFilterBtns();
+  document.getElementById('banner-area').innerHTML='';
+  renderFonts();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function syncFilterBtns(){
+  document.querySelectorAll('.fbtn').forEach(b=>{
+    b.classList.toggle('on', b.dataset.f===filter);
+  });
+}
+
+function showErr(msg){
+  document.getElementById('ea').innerHTML=`<div class="err"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p>${msg}</p></div>`;
+}
+
+function renderFonts(){
+  if(!loaded) return;
+  const grid=document.getElementById('grid');
+  let list=allFonts;
+  if(filter==='ko') list=list.filter(f=>f.hasKoName||hasKo(f.display));
+  else if(filter==='en') list=list.filter(f=>!f.hasKoName&&!hasKo(f.display));
+  else if(filter==='unmapped') list=list.filter(f=>f.source==='none'&&!hasKo(f.family));
+  else if(filter==='fav') list=list.filter(f=>favs.includes(f.family));
+
+  if(sq){const q=sq.toLowerCase();list=list.filter(f=>f.family.toLowerCase().includes(q)||f.display.toLowerCase().includes(q));}
+
+  const tf=allFonts.filter(f=>favs.includes(f.family)).length;
+  const um=allFonts.filter(f=>f.source==='none'&&!hasKo(f.family)).length;
+  document.getElementById('fc').textContent=tf>0?`(${tf})`:'';
+  document.getElementById('umc').textContent=um>0?`(${um})`:'';
+  document.getElementById('st').textContent=`${list.length} / ${allFonts.length}개`;
+  document.getElementById('badge').textContent=`${allFonts.length} 폰트`;
+
+  if(!list.length){
+    const good=filter==='unmapped';
+    grid.innerHTML=`<div class="empty${good?' good':''}">${good?'<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6 9 17l-5-5"/></svg><div>미확인 폰트가 없어요!</div>':'<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><div>검색 결과 없음</div>'}</div>`;
+    return;
+  }
+
+  const isUnmapped=f=>f.source==='none'&&!hasKo(f.family);
+  const umList=list.filter(isUnmapped);
+
+  // 미확인 탭일 때 상단 툴바 (모두 영문으로 넣기)
+  const umToolbar = (filter==='unmapped' && umList.length>0)
+    ? `<div class="unmapped-toolbar">
+        <span>미확인 ${umList.length}개 — 각 카드에서 한글명 입력하거나 영문 그대로 저장하세요</span>
+        <button class="btn-alLen" onclick="markAllEnglish()">모두 영문으로 저장</button>
+      </div>` : '';
+
+  grid.innerHTML = umToolbar + list.map(f=>{
+    const isFav=favs.includes(f.family);
+    const koUI=f.hasKoName||hasKo(f.display);
+    const ff=koUI?`'${esc(f.family)}','Noto Sans KR',sans-serif`:`'${esc(f.family)}',serif`;
+    const um=isUnmapped(f);
+    const hp=isFav
+      ?`<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" fill="currentColor" stroke="currentColor" stroke-width="2"/>`
+      :`<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="currentColor" stroke-width="2"/>`;
+
+    if(um){
+      return `<div class="fc unmapped" data-fam="${esc(f.family)}" id="ucard-${esc(f.family)}">
+        <div class="fp" style="font-family:${ff}" onclick="copyFam('${esc(f.family)}')" title="클릭 → 복사">${esc(ptext||f.family)}</div>
+        <div class="ff">
+          <div class="fn-wrap"><span class="fn-only">${esc(f.family)}</span></div>
+          <button class="fav-b${isFav?' on':''}" title="즐겨찾기" onclick="togFav('${esc(f.family)}',event)"><svg viewBox="0 0 24 24" fill="none">${hp}</svg></button>
+        </div>
+        <div class="map-row">
+          <input type="text" placeholder="한글 이름 입력…" id="minp-${esc(f.family)}" onkeydown="if(event.key==='Enter')saveMap('${esc(f.family)}',this.value,false)">
+          <button class="map-save" onclick="saveMap('${esc(f.family)}',document.getElementById('minp-${esc(f.family)}').value,false)">저장</button>
+          <button class="map-en" onclick="saveMap('${esc(f.family)}','',true)" title="영문 이름 그대로 영문 탭으로 분류">영문</button>
+        </div>
+        <span class="ch">미리보기 클릭 → 복사</span>
+      </div>`;
+    }
+
+    const showSub=f.source!=='none'&&f.display!==f.family;
+    const badge = f.source==='manual'?`<span class="fbadge manual">직접</span>`:(f.source==='file'?`<span class="fbadge file">파일</span>`:'');
+    const nameBlock=showSub
+      ?`<div class="fn-wrap"><span class="fn-main">${esc(f.display)}${badge}</span><span class="fn-sub">${esc(f.family)}</span></div>`
+      :`<div class="fn-wrap"><span class="fn-only">${esc(f.display)}</span></div>`;
+
+    return `<div class="fc${isFav?' fav':''}" data-fam="${esc(f.family)}" onclick="onCard(this,event)">
+      <div class="fp" style="font-family:${ff}">${esc(ptext||f.display)}</div>
+      <div class="ff">${nameBlock}
+        <button class="fav-b${isFav?' on':''}" title="즐겨찾기" onclick="togFav('${esc(f.family)}',event)"><svg viewBox="0 0 24 24" fill="none">${hp}</svg></button>
+      </div>
+      <span class="ch">클릭 → 복사</span>
+    </div>`;
+  }).join('');
+}
+
+function copyFam(family){
+  navigator.clipboard.writeText(family).catch(()=>{});
+  toast(`"${family}" 복사됨`);
+}
+
+function saveMap(family, value, forceEn){
+  const v = forceEn ? '__EN__' : value.trim();
+  const key = family.toLowerCase().trim();
+  if(!v && !forceEn){ delete userMap[key]; }
+  else { userMap[key] = v; }
+  localStorage.setItem('fp_usermap', JSON.stringify(userMap));
+  const f = allFonts.find(x=>x.family===family);
+  if(f){
+    if(forceEn){
+      f.display=family; f.hasKoName=false; f.source='en';
+    } else if(v){
+      f.display=v; f.hasKoName=hasKo(v); f.source='manual';
+    } else {
+      f.display=family; f.hasKoName=hasKo(family); f.source='none';
+    }
+  }
+  allFonts.sort((a,b)=>a.display.localeCompare(b.display,'ko'));
+  toast(forceEn?`"${family}" 영문으로 저장됨`:(v?`"${v}" 저장됨`:'매핑 삭제됨'));
+  renderFonts();
+}
+
+function markAllEnglish(){
+  const unmapped = allFonts.filter(f=>f.source==='none'&&!hasKo(f.family));
+  if(!unmapped.length) return;
+  unmapped.forEach(f=>{
+    const key=f.family.toLowerCase().trim();
+    userMap[key]='__EN__';
+    f.display=f.family; f.hasKoName=false; f.source='en';
+  });
+  localStorage.setItem('fp_usermap', JSON.stringify(userMap));
+  allFonts.sort((a,b)=>a.display.localeCompare(b.display,'ko'));
+  toast(`${unmapped.length}개 모두 영문으로 저장됨`);
+  renderFonts();
+}
+
+function onCard(el,e){
+  if(e.target.closest('.fav-b')) return;
+  navigator.clipboard.writeText(el.dataset.fam).catch(()=>{});
+  toast(`"${el.dataset.fam}" 복사됨`);
+}
+function togFav(fam,e){
+  e.stopPropagation();
+  const i=favs.indexOf(fam);
+  if(i<0) favs.push(fam); else favs.splice(i,1);
+  localStorage.setItem('fp_favs',JSON.stringify(favs));
+  renderFonts();
+}
+function setC(n,btn){
+  cols=n;
+  document.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const g=document.getElementById('grid');g.className='c'+n;g.style.display=loaded?'grid':'none';
+}
+
+function exportMap(){
+  const blob=new Blob([JSON.stringify(userMap,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='font-mapping.json';a.click();
+  URL.revokeObjectURL(url);
+  toast(`매핑 ${Object.keys(userMap).length}개 내보냄`);
+}
+function importMap(ev){
+  const file=ev.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      userMap={...userMap,...data};
+      localStorage.setItem('fp_usermap',JSON.stringify(userMap));
+      // 재적용
+      allFonts.forEach(f=>{
+        if(f.source!=='file'){
+          const m=dictLookup(f.family);
+          if(m){ f.display=m; f.hasKoName=hasKo(m); f.source=userMap[f.family.toLowerCase().trim()]?'manual':f.source; if(userMap[f.family.toLowerCase().trim()]) f.source='manual'; }
+        }
+      });
+      allFonts.sort((a,b)=>a.display.localeCompare(b.display,'ko'));
+      renderFonts();
+      toast(`매핑 ${Object.keys(data).length}개 가져옴`);
+    }catch(err){ toast('가져오기 실패: 잘못된 파일'); }
+  };
+  reader.readAsText(file);
+  ev.target.value='';
+}
+
+document.querySelectorAll('.fbtn').forEach(b=>{
+  b.addEventListener('click',()=>{filter=b.dataset.f;syncFilterBtns();renderFonts();});
+});
+// ── 드래그앤드롭 폰트 파일 직접 추가 ────────────────────────────────────────
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e=>{ e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', ()=>{ dropZone.classList.remove('over'); });
+dropZone.addEventListener('drop', e=>{
+  e.preventDefault();
+  dropZone.classList.remove('over');
+  handleFiles(e.dataTransfer.files);
+});
+
+async function handleFiles(files){
+  if(!files||!files.length) return;
+  const target = document.getElementById('drop-target').value; // 'ko' or 'en'
+  const added = [];
+
+  for(const file of files){
+    if(!/\.(ttf|otf)$/i.test(file.name)) continue;
+    const familyName = file.name.replace(/\.(ttf|otf|woff|woff2)$/i,'').replace(/[-_]/g,' ');
+    const url = URL.createObjectURL(file);
+
+    // 이미 있으면 스킵
+    if(allFonts.find(f=>f.family===familyName)) continue;
+
+    // FontFace로 등록
+    try{
+      const ff = new FontFace(familyName, `url(${url})`);
+      await ff.load();
+      document.fonts.add(ff);
+    }catch(e){ continue; }
+
+    const isKoTarget = target === 'ko';
+    allFonts.push({
+      family: familyName,
+      display: familyName,
+      hasKoName: isKoTarget,
+      source: 'drop',
+      isKoTarget
+    });
+    added.push(familyName);
+  }
+
+  if(!added.length){ toast('추가된 폰트가 없어요 (중복 또는 지원하지 않는 형식)'); return; }
+
+  // 폰트 불러오기 완료 상태로 전환
+  if(!loaded){
+    loaded = true;
+    document.getElementById('wc').style.display='none';
+    document.getElementById('toolbar').style.display='flex';
+    document.getElementById('subbar').style.display='flex';
+    document.getElementById('grid').style.display='grid';
+    document.getElementById('font-tools').style.display='block';
+    document.getElementById('steps').style.display='flex';
+    setStep(3);
+    updateStickyTop();
+  }
+
+  allFonts.sort((a,b)=>a.display.localeCompare(b.display,'ko'));
+  filter = target;
+  syncFilterBtns();
+  renderFonts();
+  toast(`${added.length}개 폰트 추가됨 → ${target==='ko'?'한글':'영문'} 탭`);
+}
+
+document.getElementById('pt').addEventListener('input',e=>{ptext=e.target.value;renderFonts();});
+document.getElementById('ss').addEventListener('input',e=>{
+  fsize=+e.target.value;
+  document.getElementById('sv').textContent=fsize+'px';
+  document.documentElement.style.setProperty('--preview-size', fsize+'px');
+});
+document.getElementById('si').addEventListener('input',e=>{sq=e.target.value.trim();renderFonts();});
+window.addEventListener('resize', updateStickyTop);
+
+function updateStickyTop(){
+  const header  = document.querySelector('header');
+  const steps   = document.getElementById('steps');
+  const toolbar = document.getElementById('toolbar');
+  const subbar  = document.getElementById('subbar');
+  const hh = header ? header.offsetHeight : 54;
+  const sh = (steps && steps.style.display !== 'none') ? steps.offsetHeight : 0;
+  const th = (toolbar && toolbar.style.display !== 'none') ? toolbar.offsetHeight : 0;
+  if(toolbar) toolbar.style.top = (hh + sh) + 'px';
+  if(subbar)  subbar.style.top  = (hh + sh + th) + 'px';
+}
+
+let tt;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200);
+}
+</script>
+</body>
+</html>
